@@ -10,10 +10,10 @@ const PROJECT_NAME = 'stencil-storybook-demo';
 
 module.exports = {
   stories: ['../src/**/*.stories.js'],
-  addons: ['@storybook/addon-notes/register'],
+  addons: ['@storybook/addon-notes/register', '@storybook/addon-postcss'],
   // Custom webpack config to tell Storybook where to find the compiled files from Stencil
   async webpackFinal(config) {
-    config.entry.push(path.join(__dirname, OUTPUT_DIR, `${PROJECT_NAME}.js`));
+    config.entry.push(path.join(__dirname, OUTPUT_DIR, `${PROJECT_NAME}/${PROJECT_NAME}.js`));
     fs.readdirSync(path.join(__dirname, OUTPUT_DIR, 'collection/components')).map(file => {
       jsFilePath = path.join(__dirname, OUTPUT_DIR, `collection/components/${file}/${file}.js`);
       try {
@@ -37,13 +37,15 @@ module.exports = {
 
     // Add all static files to Storybook
     config.plugins.push(
-      new CopyPlugin([
-        {
-          from: '**/*',
-          to: './',
-          context: 'dist',
-        },
-      ]),
+      new CopyPlugin({
+        patterns: [
+          {
+            from: '**/*',
+            to: './',
+            context: 'dist',
+          },
+        ],
+      }),
     );
 
     // Write the files to disk and not to memory
